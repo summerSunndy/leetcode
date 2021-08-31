@@ -12,86 +12,99 @@
  * @param {string} s
  * @return {string}
  */
- var longestPalindrome = function(s) {
+var longestPalindrome = function(s) {
   const  len = s.length;
   if(len === 0) return '';
   const isAllSameChar = (char, str)=>{
-      const reg = new RegExp(`^${char}+$`)
-      return reg.test(str);
+    const reg = new RegExp(`^${char}+$`)
+    return reg.test(str);
   }
   // 所有字符相同
   if(len === 1 || isAllSameChar(s.charAt(0), s)) return s;
   // 所有字符都不同
   const isAllDiff = (str)=>{
-      let pos = 0;
-      const temp = str.split('').sort().join('');
-      while(pos < len){
-          const tempReg = new RegExp(`${temp[pos]}+`);
-          const result = tempReg.exec(temp);
-          if(result && result[0].length === 1){
-              pos++;
-          }else{
-              break;
-          }
+    let pos = 0;
+    const temp = str.split('').sort().join('');
+    while(pos < len){
+      const tempReg = new RegExp(`${temp[pos]}+`);
+      const result = tempReg.exec(temp);
+      if(result && result[0].length === 1){
+        pos++;
+      }else{
+        break;
       }
-      return pos === len;
+    }
+    return pos === len;
   }
   if(isAllDiff(s)) return s.charAt(0);
   let result = [];
-  // start, end是s的计算位置
-  const innerFind = (start, end) => {
-      let currentComputedStr = s.substring(start, end);
-      let curChar = s[start]
-      // index, lastIndex 是当前参与计算子串的位置
-      let index = currentComputedStr.indexOf(curChar);
-      let lastIndex = currentComputedStr.lastIndexOf(curChar);
-      currentComputedStr = currentComputedStr.substr(index, lastIndex + 1);
-      if(isAllSameChar(curChar, currentComputedStr) && currentComputedStr.length > 1){
+  // start, end是str的计算位置
+  const innerFind = (start, end, str) => {
+    let currentComputedStr = str.substr(start, end+1);
+    let curChar = str[start]
+    // index, lastIndex 是当前计算到的子串的位置
+    let index = currentComputedStr.indexOf(curChar);
+    let lastIndex = currentComputedStr.lastIndexOf(curChar);
+    console.log('start compare',currentComputedStr, start, end, index, lastIndex, currentComputedStr[index], currentComputedStr[lastIndex]);
+    if(isAllSameChar(curChar, currentComputedStr) && currentComputedStr.length > 1){
+      return result.push(currentComputedStr);
+    }else if(isAllDiff(currentComputedStr)){
+      return result.push(curChar);
+    }
+    while(index <= lastIndex && currentComputedStr.length > 0){
+      //单方向移动，没有相同的字符，向前后移
+      if(index === end || lastIndex === -1){
+        break;
+      }else if(index === lastIndex && index === 0){
+        console.log('single char',currentComputedStr);
+        innerFind(start + 1, end, currentComputedStr.slice(start + 1, end));
+      }else if(
+        curChar !== currentComputedStr[end]
+        && lastIndex !== end
+        && index === 0
+      ){
+        //单方向移动，没有相同的字符，从向前移
+        console.log('single char',currentComputedStr, str[lastIndex], str[index]);
+        innerFind(start, lastIndex, currentComputedStr.slice(index, lastIndex + 1));
+      }else if(str.length > 1 && isAllSameChar(str.charAt(0), str)){
+        console.log('same char',currentComputedStr);
         return result.push(currentComputedStr);
-      }else if(isAllDiff(currentComputedStr)){
-          return result.push(curChar);
+      }else if(
+        // 计算到中间位置，结束，更新计算结果
+        (index === lastIndex && index !== 0) ||
+        (index + 1 === lastIndex && currentComputedStr[index] === currentComputedStr[lastIndex])){
+        console.log('push', currentComputedStr);
+        return result.push(currentComputedStr);
+      }else if(currentComputedStr[index] === currentComputedStr[lastIndex]){
+        // 循环过程中，元素相等时，向中间移动
+        console.log('continue', currentComputedStr);
+        index++;
+        lastIndex--;
+      }else if(currentComputedStr[index] !== currentComputedStr[lastIndex] && index +1 !== lastIndex){
+      // 双方向移动，未到中间就不相等时，进行左右子串及中间未计算部分子串的查找
+        console.log('distribute', currentComputedStr);
+        innerFind(start, index - 1, currentComputedStr.slice(start, index));
+        innerFind(lastIndex + 1, end, currentComputedStr.slice(lastIndex, end));
+        innerFind(index, lastIndex + 1, currentComputedStr.slice(index, lastIndex));
+        return;
+      }else if(index + 1 === lastIndex && currentComputedStr.length>=4){
+        // 从前一项与后一项错位求解
+        console.log('disturb1', currentComputedStr.slice(start, end - 1));
+        innerFind(start, end - 1, currentComputedStr.slice(start, end - 1));
+        console.log('disturb2', currentComputedStr.slice(start + 1, end + 1), start, end);
+        innerFind(start, end, currentComputedStr.slice(start + 1, end + 1));
+        return;
       }
-      console.log('start compare',currentComputedStr, start, end, index, lastIndex, currentComputedStr[index], currentComputedStr[lastIndex]);
-      while(index <= lastIndex && index >= 0){
-          // 没有相同的字符，向后移
-          if(index === lastIndex && currentComputedStr.length <= 1){
-            console.log('single char', start, lastIndex <= index ? currentComputedStr.length : end)
-            innerFind(start + 1, lastIndex <= index ? currentComputedStr.length : end);
-          }else if(
-            index === lastIndex ||
-            (index + 1 === lastIndex && currentComputedStr[index] === currentComputedStr[lastIndex] && currentComputedStr.slice(index, lastIndex) === currentComputedStr)){
-            console.log(1, currentComputedStr, index, lastIndex);
-            return result.push(currentComputedStr);
-          // 循环过程中，元素相等时
-          }else if(currentComputedStr[index] === currentComputedStr[lastIndex]){
-              index++;
-              lastIndex--;
-              console.log(2, currentComputedStr, index, lastIndex);
-          }else if(currentComputedStr[index] !== currentComputedStr[lastIndex] && index +1 !== lastIndex){
-          // 未到中间不相等时，进行左右子串及中间未计算部分子串的查找
-              console.log(3, start, end, index, lastIndex);
-              innerFind(start, index);
-              innerFind(lastIndex + 1, end);
-              innerFind(index, lastIndex + 1);
-              return;
-          }else if(index + 1 === lastIndex && currentComputedStr.length>=4){
-              console.log(4, start, end, index, lastIndex);
-              innerFind(start, end-1);
-              innerFind(start+1, end);
-              return;
-          }else{
-              break;
-          }
-      }
+    }
   }
-  innerFind(0, len);
+  innerFind(0, len - 1, s);
   console.log('end', result);
   let maxLengthItem = result.length>0 && result[0].length;
   const filterResult = result.filter((item)=>{
-      if(item.length > maxLengthItem){
-          maxLengthItem = item.length
-          return item;
-      }
+    if(item.length > maxLengthItem){
+      maxLengthItem = item.length
+      return item;
+    }
   });
   return filterResult.length===0 ? result[0] : filterResult[0];
 };
@@ -99,47 +112,109 @@
 /**
  * "eabcb"
  * start compare babad 0 5 0 2
-2 babad 1 1
-1 babad 1 1
-end [ 'babad' ]
-
  * start compare aacabdkacaa 0 11 0 10
-2 aacabdkacaa 1 9
-2 aacabdkacaa 2 8
-2 aacabdkacaa 3 7
-2 aacabdkacaa 4 6
-3 0 11 4 6
-start compare aaca 0 4 0 3
-2 aaca 1 2
-4 0 4 1 2
-start compare aac 0 3 0 1
-1 aac 0 1
-start compare aca 1 4 0 2
-2 aca 1 1
-1 aca 1 1
-start compare acaa 7 11 0 3
-2 acaa 1 2
-4 7 11 1 2
-start compare aca 7 10 0 2
-2 aca 1 1
-1 aca 1 1
-start compare caa 8 11 0 0
-start compare bdk 4 7 0 0
-end [ 'aac', 'aca', 'aca' ]
  */
-
-
-/**
- * 无重复字符的最长子串
- * 1. "abcabcbb"   3
- * 2. "bbbbb" 1
- * 3. "pwwkew" --- wke 3
- */
-var lengthOfLongestSubstring = function(s) {
-  if(!s || typeof s !=='string' || s.length<1){
-    return 0;
-  }else if(!s || typeof s !=='string' || s.length===1){
-      return 1;
+ const isAllDiff = (str)=>{
+  let pos = 0;
+  const temp = str.split('').sort().join('');
+  while(pos < str.length){
+    const tempReg = new RegExp(`${temp[pos]}+`);
+    const result = tempReg.exec(temp);
+    if(result && result[0].length === 1){
+      pos++;
+    }else{
+      break;
+    }
   }
-
+  return pos === str.length;
+}
+const isAllSameChar = (char, str)=>{
+  const reg = new RegExp(`^${char}+$`)
+  return reg.test(str);
+}
+const isContra = (str)=>{
+  return str === str.split('').reverse().join('');
+}
+var longestPalindrome = function(s) {
+  const  len = s.length;
+  if(len === 0) return '';
+  // 所有字符相同
+  if(len === 1 || isAllSameChar(s.charAt(0), s)) return s;
+  // 所有字符都不同
+  if(isAllDiff(s)) return s.charAt(0);
+  let maxContra = '';
+  const computeStr = (start, end, str) => {
+    for(let i = start; i< end; i++){
+      let index = 0;
+      let lastIndex = str.lastIndexOf(str[i]);
+      console.log('original',str, lastIndex, str[i], start, end);
+      let curStr = str.substr(i, lastIndex+1 - i );
+      let innerLastIndex = curStr.lastIndexOf(curStr[index]);
+      if(lastIndex !== innerLastIndex){
+        lastIndex = innerLastIndex;
+      }
+      console.log('cur',curStr);
+      if(curStr.length > 1 && isContra(curStr)){
+        maxContra = maxContra.length > curStr.length ? curStr : maxContra;
+        i += curStr.length;
+        break;
+      }else if(curStr.length > 1 && isAllDiff(curStr)){
+        i += curStr.length;
+        break;
+      }else if(curStr.length === 1){
+        continue;
+      }
+      while(index <= lastIndex){
+        console.log(curStr[index], curStr[lastIndex], i, index, lastIndex, end, curStr);
+        if(index !== lastIndex && curStr[index] === curStr[lastIndex]){
+          console.log('continue', i, index, lastIndex, end, curStr);
+          index++;
+          lastIndex--;
+          continue;
+        }else if(curStr.length >= 7 && index !== lastIndex && curStr[index] != curStr[lastIndex]){
+          const centerStr = curStr.slice(index, lastIndex+1);
+          const leftStr = curStr.slice(i, index);
+          const rightStr = curStr.slice(lastIndex+1, end+1);
+          let leftPos = -1, rightPos = -1;
+          for(let char of leftStr){
+            // center中最后与left相同的字符
+            if(centerStr.lastIndexOf(char)>-1){
+              leftPos = centerStr.lastIndexOf(char);
+            }
+          }
+          for(let char of rightStr){
+            // center中最先与left相同的字符
+            if(centerStr.indexOf(char)>-1){
+              leftPos = centerStr.lastIndexOf(char);
+            }
+          }
+          if(leftPos > -1){
+            let leftStart = leftStr.indexOf(centerStr[leftPos]);
+            let tempStr = leftStr + centerStr;
+            let leftEnd = tempStr.lastIndexOf(centerStr[leftPos])
+            let combineStr = tempStr.substr(leftStart, leftEnd - leftStart + 1);
+            console.log('split',tempStr, combineStr, leftStart, leftEnd);
+            computeStr(0, combineStr.length, combineStr);
+          }else{
+            computeStr(0, leftStr.length, leftStr);
+          }
+          if(rightPos > -1){
+            let rightEnd = rightStr.lastIndexOf(centerStr[rightPos]);
+            let tempStr = centerStr+rightStr;
+            let rightStart = tempStr.indexOf(centerStr[rightPos]);
+            let combineStr = tempStr.substr(rightStart, rightEnd - rightStart + 1);
+            console.log('split',tempStr, combineStr, rightStart, rightEnd);
+            computeStr(0, combineStr.length, combineStr);
+          }else{
+            computeStr(0, rightStr.length, rightStr);
+          }
+          if(leftPos === -1 && rightPos === -1){
+            computeStr(0, centerStr.length, centerStr);
+          }
+        }
+      }
+    }
+  }
+  computeStr(0, len, s);
+  return maxContra;
 }
