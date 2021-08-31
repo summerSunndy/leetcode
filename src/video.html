@@ -51,21 +51,22 @@
   label
 
   HTMLMediaElement DOM元素属性：
-  controller 当前媒体控制器的MediaController对象
-
-
-
+  controller 当前媒体控制器的MediaController对象  *******
   controls 显示界面的控制HTML
-  readyState 0 什么也没有  1 有metadata数据  2 有当前数据 3 有后面的数据 4 有足够的数据
+  readyState 只读 0 什么也没有  1 有metadata数据  2 有当前数据 3 有后面的数据 4 有足够的数据
   networkState 0 还没有数据 1
+  defaultPlaybackRate 1.0> 或 >1.0
   playbackRate 速率
   paused 只读
+  buffered 只读
+  duration 只读
+  ended 只读
+  error 只读
+  initialTime 只读
+  played 只读
   preload
-  played
   autoplay
   volume 音量
-  buffered 只读
-  paused 只读
   crossOrigin
   currentSrc 只读
   currentTime
@@ -79,6 +80,25 @@
   videoTracks
   textTracks
 
+  方法：
+  canPlayType('video/webm')
+  fastSeek(time) 找到给定时间
+  load() 重置媒体元素，重新选择媒体资源，扔然受preload影响
+  pause()
+  play()
+
+  AudioContext
+  属性：baseLatency 处理延迟秒数；outputLatency
+  静态方法：close(); createMediaElementSource(); createMediaStreamSource(); createMediaStreamDestination();
+  createMediaStreamTrackSource(); getOutputTimestamp(); resume(); suspend()
+
+  OfflineAudioContext：不在硬件设备渲染音频
+  OfflineAudioContext.OfflineAudioContext()
+  事件：oncomplete
+  静态方法：
+  resume()恢复被暂停的音频时间进程
+  suspend() 在指定的时间安排音频暂停时间进程
+  startRendering()开始渲染音频
  -->
 <!--css
   可替换元素
