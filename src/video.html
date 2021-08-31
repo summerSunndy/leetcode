@@ -1,8 +1,90 @@
 <html>
 
 <body>
-  <video>
-
+  <video
+    controls
+    controlslist="nodownload"
+    playsinline
+    muted
+    width="800"
+    src="https://n1video.hjfile.cn/mh/2018/07/13/e96951e10950f2ca5580d7fd1b837f3e.mp4"
+    autobuffer
+    buffered
+    duration
+    disablePictureInPicture="true"
+    disableRemotePlayback="true"
+    preload="metadata"
+  >
   </video>
 </body>
 </html>
+<!--
+  video HTML属性：width, height, src
+  controls 界面控制; controlslist: [nodownload, nofullscreen, noremoteplayback]
+  poster 海报URL
+  preload: none 不缓存； metadata 不缓存但抓取数据长度; auto 视频优先加载
+  autoplay 自动播放，优先于preload
+  played  视频已播放的所有范围；TimeRanges对象     **** 不支持指数
+  playsinline "inline" 播放
+  muted 初始化为静音
+  autobuffer 自动开始缓存
+  buffered 哪段时间内的媒体被缓存了；TimeRanges对象；一组时间范围, 每组都包含开始和结束; buf.start(0); buf.end() 指定时间范围的开始、结束偏移量
+  crossorigin：anonymous, use-credentials   ***** 不支持指数
+  currentTime 当前播放位置
+  duration 时间长度
+  loop
+  intrinsicsize 忽略图像的实际内在大小，假装是属性中知道的大小 ******* 不支持指数
+  disablePictureInPicture 禁用画中画特性
+  disableRemotePlayback 禁用远程播放功能  x-webkit-airplay="deny"
+
+  事件：
+  audioProcess 准备好进程
+  canplay 可以播放媒体文件了，但估计没有足够的数据支撑到播放结束
+  canplaythrough 估算可以播放到结束
+  complete OfflineAudioContext 渲染完成
+  durationchange duration改变时触发
+  ended 到达结束点停止
+  loadeddata media 首帧已经加载
+
+  track HTML属性：
+  kind: subtitle 翻译及其他信息；captions 翻译提示音；descriptions 文本描述； chapters;  metadata
+  label
+
+  HTMLMediaElement DOM元素属性：
+  controller 当前媒体控制器的MediaController对象
+
+
+
+  controls 显示界面的控制HTML
+  readyState 0 什么也没有  1 有metadata数据  2 有当前数据 3 有后面的数据 4 有足够的数据
+  networkState 0 还没有数据 1
+  playbackRate 速率
+  paused 只读
+  preload
+  played
+  autoplay
+  volume 音量
+  buffered 只读
+  paused 只读
+  crossOrigin
+  currentSrc 只读
+  currentTime
+  defaultMuted 不能设置是否静音
+  muted 设置静音
+  src
+  seekable 只读
+  seeking 只读 进度是否可指定到新的位置
+  sinkId   audio设备的唯一ID
+  audioTracks 字幕列表
+  videoTracks
+  textTracks
+
+ -->
+<!--css
+  可替换元素
+  object-position 50% 50% 居中
+  object-position right top
+  object-position left bottom 或具体的像素
+
+  object-fit： fill, contain, cover, scale-down, none
+-->
