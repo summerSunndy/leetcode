@@ -105,20 +105,45 @@ const isAllSameChar = (str)=>{
 const contrary = (str)=>{
   return str.split('').reverse().join('');
 }
+const computeMax = (s, formStart)=>{
+  let len = s.length, index = 0, strLength = 2
+  while((index+strLength)<=len && len>2){
+    let substr = s.substr(index, strLength);
+    let otherPart = s.substr(index + strLength);
+    let reg = new RegExp(contrary(substr));
+    let max = '';
+    console.log(s, substr, otherPart);
+    if(reg.test(otherPart)){
+      if(formStart){
+        strLength++;
+        console.log(1, substr)
+      }else{
+
+      }
+    }else{
+      if(isAllSameChar(substr)){
+        max = substr;
+        strLength += substr.length;
+        console.log(2, substr)
+      }else if(isAllDiff(substr)){
+        strLength += substr.length;
+        console.log(3, substr)
+      }else if(substr.length>2 && !isAllDiff(substr)){
+        console.log(4, substr)
+        computeMax(substr, true);
+        return computeMax(substr, false);
+      }else{
+        index++;
+        strLength = 2;
+        console.log(5, substr)
+      }
+    }
+  }
+}
 var longestPalindrome = function(s) {
   if(s.length <=1 || isAllSameChar(s)) return s;
   if(isAllDiff(s)) return s[0];
-  let max = '', len = s.length, index = 0, strLength = 3;
-  while((index+strLength)<=len){
-    let substr = s.substr(index, strLength);
-    let reg = new RegExp(contrary(substr))
-    if(reg.test(s)){
-      max = substr;
-      strLength++;
-    }else{
-      index++;
-    }
-    console.log(index, substr);
-  }
+  let max = '';
+  max = computeMax(s, true);
   return max;
 }
